@@ -8,9 +8,21 @@ exports.login = async (req, res) => {
     res.status(400).send({ data: "Please Complete All Information" });
     return req;
   }
-  const { email, password } = req.body;
+  const { email, password, providerId } = req.body;
+  console.log("boy", res.body);
   try {
     var existUser = await Userdb.findOne({ email: email });
+    if (
+      (providerId == "facebook.com" || providerId == "google.com") &&
+      existUser
+    ) {
+      const token = jwt.sign({ email, id: existUser._id }, secretKey);
+      await existUser.updateOne({
+        $set: { token: token },
+      });
+      existUser = await Userdb.findOne({ email: email });
+      res.status(200).send({ data: existUser });
+    }
     if (!existUser) return res.status(400).send({ data: "User Not Found" });
     const matchPassword = await bcrypt.compare(password, existUser.password);
     if (!matchPassword)
@@ -42,7 +54,7 @@ exports.register = async (req, res) => {
   } = req.body;
   try {
     const existUser = await Userdb.findOne({ email: email });
-    if (existUser) return res.status(400).send({ data: "User Already Exists" });
+    if (existUser) return res.status(401).send({ data: "User Already Exists" });
     const hashPassword = await bcrypt.hash(password, 10);
     const user = {
       name: name,
