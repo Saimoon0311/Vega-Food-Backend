@@ -10,7 +10,7 @@ exports.login = async (req, res) => {
   }
   const { email, password } = req.body;
   try {
-    const existUser = await Userdb.findOne({ email: email });
+    var existUser = await Userdb.findOne({ email: email });
     if (!existUser) return res.status(400).send({ data: "User Not Found" });
     const matchPassword = await bcrypt.compare(password, existUser.password);
     if (!matchPassword)
@@ -19,6 +19,7 @@ exports.login = async (req, res) => {
     await existUser.updateOne({
       $set: { token: token },
     });
+    existUser = await Userdb.findOne({ email: email });
     res.status(200).send({ data: existUser });
   } catch (error) {
     res.status(400).send({ data: error });
