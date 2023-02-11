@@ -4,7 +4,7 @@ const secretKey = "secretKey";
 const bcrypt = require("bcrypt");
 
 exports.login = async (req, res) => {
-  if (!req.body) {
+  if (req.body == null || req.body == undefined) {
     res.status(400).send({ data: "Please Complete All Information" });
     return req;
   }
