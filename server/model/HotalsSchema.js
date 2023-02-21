@@ -8,9 +8,7 @@ const hotalsSchema = new schema({
     required: true,
   },
   email: {
-    required: true,
     type: String,
-    unique: true,
   },
   contactNumber: {
     type: String,
@@ -44,6 +42,8 @@ const hotalsSchema = new schema({
   gallery: {
     type: Array,
   },
+  password: String,
+  token: String,
   hotalOwnerID: String,
   specialItem: Object,
   twitter: String,
